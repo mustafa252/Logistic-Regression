@@ -1,0 +1,91 @@
+
+# https://www.youtube.com/watch?v=BMNuPwUD5EA
+# https://www.youtube.com/watch?v=ReXesvtkS4A
+# https://www.youtube.com/results?search_query=main+diagonal+matrix+using+python
+# https://www.youtube.com/watch?v=ekuD8JUdL6M
+# https://www.youtube.com/watch?v=He74ncsUMbE
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+###### X.XT method
+
+
+''' use dummy variables '''
+titanic = pd.get_dummies(titanic, columns=['embark_town', 'class', 'who'])
+
+titanic.info()
+x = titanic.drop(['survived'], axis=1)
+x
+x.info()
+
+# before dropping
+
+corrmatrix = x.corr()
+sns.heatmap(corrmatrix)
+np.linalg.det(x.T.dot(x))
+
+
+# after dropping 
+
+'''avoid Multicollinearity problem by dropping the 3rd columns'''
+x.drop(['embark_town_Southampton', 
+                'class_Third', 
+                'who_man'], axis=1, inplace=True)
+
+corrmatrix_2 = x.corr()
+sns.heatmap(corrmatrix_2)
+np.linalg.det(x.T.dot(x))
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+###### Correlation method
+
+''' use dummy variables '''
+titanic = pd.get_dummies(titanic, columns=['embark_town', 'class', 'who'])
+
+titanic.info()
+x = titanic.drop(['survived'], axis=1)
+x
+x.info()
+
+# before dropping
+
+corrmatrix = x.corr()
+sns.heatmap(corrmatrix)
+np.linalg.det(x.T.dot(x))
+
+
+# correlation function
+def corr_fun(data, threshold):
+    # set for correlated columns
+    corr_col = set()
+    # create correalation matrix
+    corr_matrix = data.corr()
+    # check values in this matrix by using threshold value
+    for i in range(len(corr_matrix.columns)):
+        # check row+column
+        for j in range(i):
+            # remove (-) signe
+            if abs(corr_matrix.iloc[i,j] > threshold):
+                # get col name
+                colname = corr_matrix.columns[i]
+                corr_col.add(colname)
+    
+    return corr_col
+
+
+# apply function
+corr_features = corr_fun(x, 0.9)
+# drop correlated columns
+x.drop(labels=corr_features, axis=1, inplace=True) 
+
+# test again
+corrmatrix_2 = x.corr()
+sns.heatmap(corrmatrix_2)
+np.linalg.det(x.T.dot(x))
+corr_features = corr_fun(x, 0.9)
+corr_features
+
+
+
+
+
